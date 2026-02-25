@@ -1,7 +1,7 @@
 {
   "name": "zombificado-kids-edition",
   "version": "1.0.0",
-  "description": "Juego Zombificado Kids",
+  "description": "Juego Zombificado",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
