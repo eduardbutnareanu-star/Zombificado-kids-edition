@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Zombificado Kids</title>
+<style>
+body { margin:0; overflow:hidden; font-family:Arial; background:#87CEEB; }
+#ui {
+ position:absolute;
+ top:10px;
+ left:10px;
+ background:white;
+ padding:10px;
+ border-radius:10px;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">Cargando...</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="module">
+
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js';
+
+const socket = io();
+
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+let renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+camera.position.set(0,80,120);
+camera.lookAt(0,0,0);
+
+let ground = new THREE.Mesh(
+ new THREE.PlaneGeometry(1000,1000),
+ new THREE.MeshBasicMaterial({color:0x98FB98})
+);
+ground.rotation.x=-Math.PI/2;
+scene.add(ground);
+
+function createPlayer(){
+ let group = new THREE.Group();
+
+ let body = new THREE.Mesh(
+   new THREE.SphereGeometry(4,16,16),
+   new THREE.MeshBasicMaterial({color:0x3399ff})
+ );
+ body.position.y = 4;
+
+ let tongue = new THREE.Mesh(
+   new THREE.BoxGeometry(1,1.5,0.2),
+   new THREE.MeshBasicMaterial({color:0xff69b4})
+ );
+ tongue.position.set(0,3,3.5);
+ tongue.visible = false;
+
+ group.add(body,tongue);
+ group.userData = {body,tongue};
+
+ scene.add(group);
+ return group;
+}
+
+let players = {};
+let keys = {};
+
+document.addEventListener("keydown",e=>keys[e.code]=true);
+document.addEventListener("keyup",e=>keys[e.code]=false);
+
+function animate(){
+ requestAnimationFrame(animate);
+
+ let me = players[socket.id];
+ if(me){
+   if(keys["ArrowUp"]) me.position.z -= 1;
+   if(keys["ArrowDown"]) me.position.z += 1;
+   if(keys["ArrowLeft"]) me.position.x -= 1;
+   if(keys["ArrowRight"]) me.position.x += 1;
+
+   socket.emit("move",{x:me.position.x,z:me.position.z});
+ }
+
+ renderer.render(scene,camera);
+}
+animate();
+
+socket.on("state",data=>{
+ let serverPlayers = data.players;
+
+ for(let id in serverPlayers){
+   if(!players[id]) players[id] = createPlayer();
+
+   players[id].position.x = serverPlayers[id].x;
+   players[id].position.z = serverPlayers[id].z;
+
+   if(serverPlayers[id].energy){
+     players[id].userData.body.material.color.set(0x00ff00);
+     players[id].userData.tongue.visible = true;
+   } else {
+     players[id].userData.body.material.color.set(0x3399ff);
+     players[id].userData.tongue.visible = false;
+   }
+ }
+
+ document.getElementById("ui").innerHTML =
+   "Tiempo: " + data.timer;
+});
+
+</script>
+</body>
+</html>
