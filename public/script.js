@@ -113,8 +113,8 @@ function animate() {
     player.position.x += 0.5;
   }
 
-  camera.position.x = player.position.x;
-  camera.position.z = player.position.z + 20;
+ camera.position.x = player.position.x;
+ camera.position.z = player.position.z + 20;
 
   camera.lookAt(player.position);
 
@@ -122,3 +122,12 @@ function animate() {
 }
 
 animate();
+camera.position.x = player.position.x;
+camera.position.y = player.position.y + 10;
+camera.position.z = player.position.z + 15;
+
+camera.lookAt(
+  player.position.x,
+  player.position.y + 5,
+  player.position.z
+);
