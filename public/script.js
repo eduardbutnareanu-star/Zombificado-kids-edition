@@ -120,16 +120,32 @@ function animate() {
     player.position.x -= 0.5;
   }
 
-  if (keys['arrowright'] || keys['d']) {
-    player.position.x += 0.5;
-  }
+let speed = 0.5;
 
- camera.position.x = player.position.x;
- camera.position.z = player.position.z + 20;
+let newX = player.position.x;
+let newZ = player.position.z;
 
-  camera.lookAt(player.position);
+if (keys['arrowup'] || keys['w']) {
+  newZ -= speed;
+}
 
-  renderer.render(scene, camera);
+if (keys['arrowdown'] || keys['s']) {
+  newZ += speed;
+}
+
+if (keys['arrowleft'] || keys['a']) {
+  newX -= speed;
+}
+
+if (keys['arrowright'] || keys['d']) {
+  newX += speed;
+}
+
+if (!checkTreeCollision(newX, newZ)) {
+
+  player.position.x = newX;
+  player.position.z = newZ;
+
 }
 
 animate();
@@ -237,3 +253,73 @@ addBodyParts(player);
 setInterval(() => {
   addPoints(1);
 }, 3000);
+// ===== BOTS =====
+
+const bots = [];
+
+function createBot(x, z) {
+
+  const bot = createPlayer(0xff0000);
+
+  bot.position.set(x, 0, z);
+
+  bots.push(bot);
+}
+
+for (let i = 0; i < 5; i++) {
+
+  createBot(
+    (Math.random() - 0.5) * 200,
+    (Math.random() - 0.5) * 200
+  );
+}
+
+// ===== COLISIONES =====
+
+function checkTreeCollision(newX, newZ) {
+
+  for (const tree of trees) {
+
+    const dx = newX - tree.position.x;
+    const dz = newZ - tree.position.z;
+
+    const distance = Math.sqrt(dx * dx + dz * dz);
+
+    if (distance < 4) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// ===== IA BOTS =====
+
+function updateBots() {
+
+  bots.forEach(bot => {
+
+    const dx = player.position.x - bot.position.x;
+    const dz = player.position.z - bot.position.z;
+
+    const distance = Math.sqrt(dx * dx + dz * dz);
+
+    if (distance > 2) {
+
+      bot.position.x += dx * 0.003;
+      bot.position.z += dz * 0.003;
+    }
+
+    // TOCAR AL JUGADOR
+    if (distance < 2) {
+
+      document.body.style.background = "darkred";
+
+      setTimeout(() => {
+        document.body.style.background = "";
+      }, 300);
+    }
+
+  });
+
+}
