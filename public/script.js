@@ -131,3 +131,98 @@ camera.lookAt(
   player.position.y + 5,
   player.position.z
 );
+// ===== RECOMPENSAS =====
+
+let score = 0;
+
+const scoreUI = document.createElement("div");
+scoreUI.style.position = "absolute";
+scoreUI.style.top = "10px";
+scoreUI.style.right = "10px";
+scoreUI.style.background = "white";
+scoreUI.style.padding = "10px";
+scoreUI.style.borderRadius = "10px";
+scoreUI.innerHTML = "🏆 Puntos: 0";
+
+document.body.appendChild(scoreUI);
+
+function addPoints(points) {
+  score += points;
+  scoreUI.innerHTML = "🏆 Puntos: " + score;
+}
+
+// ===== PERSONAJE MEJORADO =====
+
+function addBodyParts(player) {
+
+  // BRAZO IZQUIERDO
+  const armLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 3, 0.5),
+    new THREE.MeshStandardMaterial({ color: 0xffcc99 })
+  );
+
+  armLeft.position.set(-1.5, 4.5, 0);
+
+  // BRAZO DERECHO
+  const armRight = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 3, 0.5),
+    new THREE.MeshStandardMaterial({ color: 0xffcc99 })
+  );
+
+  armRight.position.set(1.5, 4.5, 0);
+
+  // PIERNA IZQUIERDA
+  const legLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(0.7, 3, 0.7),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+
+  legLeft.position.set(-0.5, 1, 0);
+
+  // PIERNA DERECHA
+  const legRight = new THREE.Mesh(
+    new THREE.BoxGeometry(0.7, 3, 0.7),
+    new THREE.MeshStandardMaterial({ color: 0x222222 })
+  );
+
+  legRight.position.set(0.5, 1, 0);
+
+  // OJOS VERDES
+  const eyeLeft = new THREE.Mesh(
+    new THREE.SphereGeometry(0.1),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+  );
+
+  eyeLeft.position.set(-0.3, 7.2, 0.9);
+
+  const eyeRight = new THREE.Mesh(
+    new THREE.SphereGeometry(0.1),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+  );
+
+  eyeRight.position.set(0.3, 7.2, 0.9);
+
+  // LENGUA
+  const tongue = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.6, 0.1),
+    new THREE.MeshBasicMaterial({ color: 0xff0066 })
+  );
+
+  tongue.position.set(0, 6.4, 1);
+
+  player.add(armLeft);
+  player.add(armRight);
+  player.add(legLeft);
+  player.add(legRight);
+  player.add(eyeLeft);
+  player.add(eyeRight);
+  player.add(tongue);
+}
+
+addBodyParts(player);
+
+// ===== GANAR PUNTOS AL MOVERSE =====
+
+setInterval(() => {
+  addPoints(1);
+}, 3000);
