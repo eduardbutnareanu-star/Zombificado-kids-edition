@@ -31,23 +31,34 @@ const ground = new THREE.Mesh(
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
+const trees = [];
+
 function createTree(x, z) {
+
+  const tree = new THREE.Group();
+
   const trunk = new THREE.Mesh(
     new THREE.CylinderGeometry(0.5, 0.5, 5),
     new THREE.MeshStandardMaterial({ color: 0x8B4513 })
   );
 
-  trunk.position.set(x, 2.5, z);
+  trunk.position.set(0, 2.5, 0);
 
   const leaves = new THREE.Mesh(
     new THREE.SphereGeometry(3),
     new THREE.MeshStandardMaterial({ color: 0x228B22 })
   );
 
-  leaves.position.set(x, 7, z);
+  leaves.position.set(0, 7, 0);
 
-  scene.add(trunk);
-  scene.add(leaves);
+  tree.add(trunk);
+  tree.add(leaves);
+
+  tree.position.set(x, 0, z);
+
+  scene.add(tree);
+
+  trees.push(tree);
 }
 
 for (let i = 0; i < 100; i++) {
